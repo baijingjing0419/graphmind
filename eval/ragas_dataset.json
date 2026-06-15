@@ -1,0 +1,322 @@
+[
+  {
+    "id": "q001",
+    "question": "什么是RAG技术？它的核心工作流程是怎样的？",
+    "reference": "RAG（Retrieval-Augmented Generation，检索增强生成）是一种将信息检索与文本生成相结合的技术架构。其核心工作流程分为三个阶段：首先，将用户查询送入检索引擎，从外部知识库中检索相关文档或文本片段；然后，将检索到的内容作为上下文注入到大语言模型的提示词中；最后，LLM基于检索到的外部知识生成回答。RAG有效缓解了LLM的知识截止问题和幻觉现象，使模型能够基于最新、最相关的外部信息给出准确回答。",
+    "query_type": "definition",
+    "difficulty": "easy",
+    "tags": ["rag", "architecture", "fundamentals"]
+  },
+  {
+    "id": "q002",
+    "question": "向量数据库的核心功能是什么？它与传统关系型数据库有什么区别？",
+    "reference": "向量数据库的核心功能是存储和检索高维向量数据，支持基于向量相似度的近似最近邻（ANN）搜索。与传统关系型数据库的区别在于：关系型数据库基于结构化表格和精确匹配查询（SQL），适合处理结构化数据；而向量数据库基于嵌入向量和语义相似度搜索，适合处理非结构化数据（文本、图像、音频等）的语义检索场景。向量数据库通常采用HNSW、IVF等索引算法来加速高维向量的近似搜索。",
+    "query_type": "comparative",
+    "difficulty": "easy",
+    "tags": ["vector-database", "database", "comparison"]
+  },
+  {
+    "id": "q003",
+    "question": "什么是嵌入模型（Embedding Model）？它在RAG系统中扮演什么角色？",
+    "reference": "嵌入模型是一种将文本、图像等非结构化数据转换为固定维度数值向量（Embedding）的模型。在RAG系统中，嵌入模型扮演着核心桥梁角色：在索引阶段，它将文档切分后的文本块转换为向量并存入向量数据库；在检索阶段，它将用户查询转换为向量，通过向量相似度搜索找到最相关的文档片段。嵌入质量直接决定了检索效果的上限。常见的嵌入模型包括OpenAI的text-embedding-3、BGE系列、以及Ollama托管的nomic-embed-text等。",
+    "query_type": "definition",
+    "difficulty": "easy",
+    "tags": ["embedding", "rag", "fundamentals"]
+  },
+  {
+    "id": "q004",
+    "question": "GraphMind系统中使用了哪些数据库？各自承担什么职责？",
+    "reference": "GraphMind使用了三种数据库：MongoDB用于存储文档、文本块、对话记录和系统配置等结构化数据；Qdrant作为向量数据库，存储文档块的嵌入向量并支持语义相似度搜索；Neo4j作为图数据库，存储从文档中提取的实体和关系，构建知识图谱以支持图谱检索。此外还使用Redis作为缓存层。这种多数据库架构实现了向量检索、关键词检索和图谱检索的混合检索能力。",
+    "query_type": "factual",
+    "difficulty": "easy",
+    "tags": ["graphmind", "architecture", "database"]
+  },
+  {
+    "id": "q005",
+    "question": "什么是混合检索（Hybrid Retrieval）？为什么它比单一检索方式更好？",
+    "reference": "混合检索是指同时使用多种检索策略并将结果融合的检索方式。GraphMind中结合了三种检索方式：向量检索（基于语义相似度，擅长理解同义表达和语义关联）、BM25关键词检索（基于词频统计，擅长精确匹配和专业术语）、知识图谱检索（基于实体关系，擅长多跳推理和关联发现）。混合检索比单一检索更好的原因在于：不同检索策略有各自的优势和盲区，向量检索可能遗漏精确关键词匹配，关键词检索不理解语义，图谱检索依赖实体识别质量。通过RRF（倒数秩融合）等算法将多路结果合并，可以互补短板，提升整体检索的召回率和精确率。",
+    "query_type": "analytical",
+    "difficulty": "medium",
+    "tags": ["hybrid-retrieval", "rag", "retrieval"]
+  },
+  {
+    "id": "q006",
+    "question": "什么是文档分块（Chunking）？常用的分块策略有哪些？",
+    "reference": "文档分块是将长文档切分为适合嵌入和检索的较小文本片段的过程。常用策略包括：固定大小分块（按字符数或token数等距切分，实现简单但可能切断语义）、滑动窗口分块（相邻块之间有重叠，保证边界处的语义连续性）、语义分块（基于段落、章节等自然语义边界切分，保持语义完整性）、智能分块（结合文档结构和语义进行自适应切分）。GraphMind中实现了多种分块策略，包括HybridChunker（混合策略）、SemanticChunker（语义策略）和SlidingWindowChunker（滑动窗口策略）。",
+    "query_type": "definition",
+    "difficulty": "easy",
+    "tags": ["chunking", "document-processing", "rag"]
+  },
+  {
+    "id": "q007",
+    "question": "Neo4j图数据库在GraphMind中是如何使用的？它解决了什么问题？",
+    "reference": "Neo4j在GraphMind中用于构建和查询知识图谱。系统通过LLM从文档文本中提取实体（人物、组织、概念、产品等）和它们之间的关系，以节点和边的形式存入Neo4j。它解决的问题是：传统向量检索只能找到语义相似的文本，但无法显式地关联不同文档中的实体关系。例如，当用户问'A公司和B公司有什么合作关系'时，向量检索可能分别找到A公司和B公司的文档，但无法直接给出它们之间的关系——而知识图谱可以通过关系边直接查找到这种关联。此外，GraphMind还支持通过APOC插件将图谱中的实体向量化，实现向量+图谱的融合检索。",
+    "query_type": "analytical",
+    "difficulty": "medium",
+    "tags": ["neo4j", "knowledge-graph", "graphmind"]
+  },
+  {
+    "id": "q008",
+    "question": "Qdrant是什么？它的主要索引算法有哪些？",
+    "reference": "Qdrant是一个开源的高性能向量数据库，使用Rust语言编写，支持gRPC和REST API。它的主要索引算法是HNSW（Hierarchical Navigable Small World），这是一种基于图的多层近似最近邻搜索算法，在检索速度和精度之间取得了很好的平衡。Qdrant支持丰富的过滤条件、负载数据（payload）存储、多集合管理、量化压缩（Scalar/Product Quantization）等功能，适合生产环境中的大规模向量检索场景。",
+    "query_type": "definition",
+    "difficulty": "easy",
+    "tags": ["qdrant", "vector-database", "indexing"]
+  },
+  {
+    "id": "q009",
+    "question": "RAG系统中常说的'幻觉'（Hallucination）问题是指什么？如何缓解？",
+    "reference": "幻觉是指大语言模型生成的内容看起来合理但实际与事实不符或无法从给定上下文中推导出来的现象。在RAG系统中，幻觉可能表现为：编造检索结果中不存在的数据、错误引用来源、将不同文档的信息错误拼接。缓解方法包括：提供充足且高质量的检索上下文、使用Faithfulness指标评估生成内容与上下文的一致性、要求模型在回答中标注引用来源（citation）、使用严格的提示词工程约束模型行为、以及采用较小的生成温度参数减少随机性。",
+    "query_type": "definition",
+    "difficulty": "easy",
+    "tags": ["hallucination", "rag", "quality"]
+  },
+  {
+    "id": "q010",
+    "question": "什么是重排序（Reranking）？它在检索流程中处于什么位置？",
+    "reference": "重排序是在初检结果的基础上，使用更精确但计算成本更高的模型对候选文档进行二次排序的过程。在检索流程中，它位于初检（如向量检索、BM25检索）之后、生成（LLM回答）之前。初检阶段为了效率通常使用双编码器模型（如embedding模型）进行快速粗筛；重排序阶段使用交叉编码器模型（如BAAI/bge-reranker-base）对query-document对进行精细的相关性打分，将最相关的文档排到前面。重排序可以显著提升最终检索结果的质量，但会增加一定的延迟。GraphMind中通过运行时配置开关控制是否启用重排序。",
+    "query_type": "definition",
+    "difficulty": "medium",
+    "tags": ["reranking", "retrieval", "rag"]
+  },
+  {
+    "id": "q011",
+    "question": "RRF（倒数秩融合）算法是如何工作的？",
+    "reference": "RRF（Reciprocal Rank Fusion）是一种将多个排序列表合并为一个统一排序的融合算法。其计算公式为：对每个文档d，RRF_score(d) = sum(1 / (k + rank_i(d)))，其中rank_i(d)是文档d在第i个检索结果列表中的排名位置，k是一个常数（通常设为60）用于平滑排名差异的影响。RRF不依赖原始相似度分数的绝对值，只关心相对排名，因此非常适合融合来自不同检索策略（向量、BM25、图谱）的结果——这些策略的分数尺度可能完全不同，但通过RRF可以公平地合并它们的排名信号。",
+    "query_type": "definition",
+    "difficulty": "medium",
+    "tags": ["rrf", "fusion", "retrieval"]
+  },
+  {
+    "id": "q012",
+    "question": "MongoDB在RAG系统中通常扮演什么角色？",
+    "reference": "MongoDB在RAG系统中通常承担以下几个角色：文档元数据存储（存储原始文档的信息、上传时间、处理状态等）、文本块存储（将切分后的文档块及其元数据持久化）、对话历史存储（保存用户与AI的对话记录）、系统配置存储（存储知识库设置、模型参数等）。作为NoSQL文档数据库，MongoDB灵活的Schema非常适合RAG场景中结构化程度不一的各类数据。在GraphMind中，MongoDB是主文档数据库，承载了文档、块、对话、助手配置和运行时设置等核心数据。",
+    "query_type": "factual",
+    "difficulty": "easy",
+    "tags": ["mongodb", "database", "rag"]
+  },
+  {
+    "id": "q013",
+    "question": "GraphMind从文档上传到可以被检索，需要经过哪些处理步骤？",
+    "reference": "GraphMind的文档处理流程包括以下步骤：第一步，文档解析——根据文件类型（PDF、Word、Markdown等）使用对应的解析器提取文本内容；第二步，文档分块——使用配置的分块策略（如混合分块）将文本切分为适合嵌入的片段；第三步，向量化——使用Ollama托管嵌入模型（nomic-embed-text）将每个文本块转换为向量；第四步，存储入库——向量和元数据存入Qdrant，文本块存入MongoDB；第五步，知识提取——使用LLM从文本中提取实体和关系，构建到Neo4j知识图谱中。完成后文档状态更新为'已索引'，此时可以通过检索接口查询到该文档的内容。",
+    "query_type": "procedural",
+    "difficulty": "medium",
+    "tags": ["graphmind", "pipeline", "document-processing"]
+  },
+  {
+    "id": "q014",
+    "question": "BM25算法是什么？它在混合检索中有什么优势？",
+    "reference": "BM25（Best Matching 25）是一种基于概率检索模型的文本排序函数，是TF-IDF的改进版本。它考虑了词频（TF）、逆文档频率（IDF）和文档长度归一化三个因素。在混合检索中，BM25的优势在于：擅长精确关键词匹配，对于包含专有名词、产品型号、法律条款编号等查询效果优于向量检索；不需要训练和GPU资源，计算效率高；能够捕捉向量检索可能遗漏的稀疏词汇信号。它的局限是不理解语义——'汽车'和'轿车'在BM25看来是完全不同的词，而向量检索可以捕捉到它们的语义相似性。这正是混合检索互补的价值所在。",
+    "query_type": "analytical",
+    "difficulty": "medium",
+    "tags": ["bm25", "keyword-search", "retrieval"]
+  },
+  {
+    "id": "q015",
+    "question": "什么是评估指标中的Faithfulness？它在RAG评测中为什么重要？",
+    "reference": "Faithfulness（忠实度）衡量的是生成回答中的每一条陈述是否能从给定的检索上下文中推导出来。它的评测方式是：先将生成回答拆解为若干原子性陈述，然后逐一判断每个陈述是否被检索上下文所支持。Faithfulness得分 = 被支持的陈述数 / 总陈述数。它之所以重要，是因为它直接衡量了RAG系统最核心的风险——幻觉。即使一个回答读起来流畅、看起来合理，如果它包含了检索上下文中不存在的信息，Faithfulness分数就会很低。这是区分'好的RAG系统'和'看起来好的RAG系统'的关键指标。",
+    "query_type": "definition",
+    "difficulty": "medium",
+    "tags": ["faithfulness", "metrics", "evaluation"]
+  },
+  {
+    "id": "q016",
+    "question": "Answer Correctness和Answer Relevancy这两个指标有什么区别？",
+    "reference": "Answer Correctness（答案正确性）衡量的是生成回答与标准答案（Ground Truth）之间的事实一致性，关注回答是否说'对了'——它通过对比生成答案和参考答案的语义相似度以及事实覆盖度来打分。Answer Relevancy（答案相关性）衡量的是生成回答与用户问题的相关程度，关注回答是否在'答所问'——它通过反向生成（根据答案反推可能的问题，再对比原问题）来判断答案是否切题。两者区别在于：一个回答可以非常相关（完全围绕问题展开）但不正确（内容错误）；也可以信息正确但不相关（答非所问）。理想的RAG回答需要同时在这两个维度上表现良好。",
+    "query_type": "comparative",
+    "difficulty": "hard",
+    "tags": ["metrics", "evaluation", "ragas"]
+  },
+  {
+    "id": "q017",
+    "question": "Context Precision和Context Recall分别衡量什么？",
+    "reference": "Context Precision（上下文精确率）衡量检索结果中相关文档的比例和排序质量——不仅要看检索到了多少相关文档，还要看这些相关文档是否排在了前面。排序越靠前的越相关，分数越高。Context Recall（上下文召回率）衡量的是标准答案中所需的信息是否都被检索到的上下文中覆盖了——即检索是否'找全了'回答所需的所有信息。两者的关系类似于传统信息检索中的Precision和Recall：Precision关注'找得准不准'，Recall关注'找得全不全'。在RAG系统中，两者都需要关注——召回不足会导致回答信息不全，精确率不足会引入噪声干扰LLM判断。",
+    "query_type": "comparative",
+    "difficulty": "hard",
+    "tags": ["metrics", "retrieval", "evaluation"]
+  },
+  {
+    "id": "q018",
+    "question": "如何搭建一个完整的RAG评测体系？需要哪些要素？",
+    "reference": "搭建完整的RAG评测体系需要以下要素：第一，高质量的评测数据集（Ground Truth），包含问题、标准答案和期望的检索上下文，覆盖不同的查询类型和难度级别；第二，多维度的评测指标，分为检索层指标（Context Precision、Context Recall）和生成层指标（Faithfulness、Answer Relevancy、Answer Correctness）；第三，评测工具链，如Ragas框架，能够自动化运行评测并生成结构化报告；第四，评测流程的自动化，包括定期触发评测、结果存档、趋势跟踪；第五，评测驱动的迭代机制，根据评测结果识别薄弱环节并指导优化方向。一个好的评测体系不仅告诉你系统'好不好'，还能告诉你'哪里不好'和'如何改进'。",
+    "query_type": "procedural",
+    "difficulty": "hard",
+    "tags": ["evaluation", "best-practices", "ragas"]
+  },
+  {
+    "id": "q019",
+    "question": "GraphMind中的QueryPlanner是做什么的？",
+    "reference": "QueryPlanner是GraphMind中的查询规划模块，负责在检索执行前对用户查询进行分析和规划。它的主要功能包括：意图检测（通过关键词启发式规则判断查询是需要比较、列表、依据查找还是风险评估）、查询重写（对复杂或模糊的查询进行改写以提高检索效果）、动态参数调优（根据查询长度和类型自动调整prefetch_k和final_k等检索参数）。例如，对于包含'对比'、'差异'等关键词的比较类查询，系统会自动增大final_k以获取更多候选文档；对于法律条款类查询，会增大prefetch_k以扩大搜索范围。这种动态规划使得系统能够针对不同类型的查询采用不同的检索策略。",
+    "query_type": "factual",
+    "difficulty": "medium",
+    "tags": ["graphmind", "query-planning", "retrieval"]
+  },
+  {
+    "id": "q020",
+    "question": "Ollama是什么？如何在本地使用Ollama部署大模型？",
+    "reference": "Ollama是一个开源的大模型本地部署和运行工具，支持在个人电脑上运行各种开源LLM（如Llama、Gemma、Qwen、Mistral等），并提供兼容OpenAI的API接口。使用方式：下载安装Ollama后，通过ollama pull <model-name>拉取模型（如ollama pull gemma3:1b），然后即可通过ollama run <model-name>命令行交互或通过HTTP API（http://localhost:11434）程序调用。Ollama支持GPU加速（自动检测CUDA/Metal）、模型量化、自定义Modelfile等特性，非常适合需要数据隐私保护或离线使用的RAG场景。",
+    "query_type": "definition",
+    "difficulty": "easy",
+    "tags": ["ollama", "llm", "deployment"]
+  },
+  {
+    "id": "q021",
+    "question": "什么是提示词工程（Prompt Engineering）？在RAG场景中有哪些常用技巧？",
+    "reference": "提示词工程是设计和优化发送给LLM的提示文本以获得期望输出的技术。在RAG场景中的常用技巧包括：系统角色设定（明确告诉模型它是基于文档知识回答问题的助手）、上下文注入格式（使用清晰的标记如'[上下文开始]...[上下文结束]'将检索结果包裹）、引用要求（明确要求模型在回答中标明信息来源和编号）、反幻觉约束（指示模型'如果上下文中没有相关信息，请明确说不知道，不要编造'）、分步推理（对复杂问题要求模型先分析再回答）、以及对话历史管理（合理裁剪和格式化历史对话以控制token消耗）。",
+    "query_type": "definition",
+    "difficulty": "easy",
+    "tags": ["prompt-engineering", "llm", "rag"]
+  },
+  {
+    "id": "q022",
+    "question": "知识图谱在RAG中有哪些应用方式？",
+    "reference": "知识图谱在RAG中有多种应用方式：一是GraphRAG——将文档中的实体和关系抽取为图结构，检索时直接在图中遍历相关节点和关系，能发现向量检索难以捕捉的间接关联；二是实体链接——将查询中的实体链接到图谱中的节点，利用图谱的结构化信息增强检索上下文；三是混合增强——将图谱检索结果与向量检索结果通过融合算法合并，取长补短；四是查询扩展——基于图谱中的关系对查询进行扩展，如查询'公司A的产品'时，通过图谱找到公司A关联的产品节点进行扩展检索。GraphMind采用的就是混合增强方式，通过Neo4j+Qdrant实现向量和图谱的融合检索。",
+    "query_type": "analytical",
+    "difficulty": "hard",
+    "tags": ["knowledge-graph", "graphrag", "retrieval"]
+  },
+  {
+    "id": "q023",
+    "question": "FastAPI框架相比Flask有哪些优势？为什么GraphMind选择FastAPI？",
+    "reference": "FastAPI相比Flask的主要优势有：原生异步支持（基于Python asyncio和Starlette，能够处理高并发请求）、自动生成OpenAPI文档（Swagger UI和ReDoc开箱即用）、基于Pydantic的数据验证和序列化（类型安全、自动校验）、依赖注入系统（代码组织清晰、易于测试）、以及优异的性能表现（接近Node.js和Go的水平）。GraphMind选择FastAPI的原因是：RAG系统的检索和生成都是IO密集型操作（数据库查询、LLM API调用），异步框架能高效利用资源；Pydantic的类型系统有助于定义清晰的数据模型；自动API文档方便前端开发和接口调试。",
+    "query_type": "comparative",
+    "difficulty": "easy",
+    "tags": ["fastapi", "framework", "backend"]
+  },
+  {
+    "id": "q024",
+    "question": "什么是SSE（Server-Sent Events）？GraphMind中如何使用它？",
+    "reference": "SSE（Server-Sent Events）是一种服务器向客户端推送实时数据的HTTP协议扩展。与WebSocket不同，SSE是单向的（服务器→客户端），基于标准HTTP协议，实现更简单且天然支持自动重连。GraphMind中使用SSE流式传输LLM生成的回答——当用户提出问题时，LLM逐token生成回答，每个token通过SSE事件实时推送到前端，用户可以看到回答逐字出现的效果。这种方式大幅降低了首字延迟（TTFT），提升了用户体验。此外，多Agent深度研究流程中也通过SSE推送各Agent的执行状态和进度。",
+    "query_type": "definition",
+    "difficulty": "medium",
+    "tags": ["sse", "streaming", "graphmind"]
+  },
+  {
+    "id": "q025",
+    "question": "在多Agent架构中，Coordinator和Expert Agent的职责分别是什么？",
+    "reference": "Coordinator（协调器）负责理解用户的复杂研究任务，将其分解为子任务并生成AgentPlan（智能体计划），指定需要哪些Expert Agent参与、它们的执行顺序和依赖关系。Expert Agent（专业智能体）各有所长：有的负责文档检索、有的负责代码分析、有的负责概念解释、有的负责示例生成、有的负责批判性评估。Coordinator不仅做任务分配，还要整合各Expert的输出，最终生成连贯、全面且经过多角度审查的研究报告。这种架构的设计理念是：将复杂研究任务分解为专业化子任务，让每个Agent聚焦自己擅长的领域，通过协作产生1+1>2的效果。",
+    "query_type": "factual",
+    "difficulty": "medium",
+    "tags": ["multi-agent", "graphmind", "architecture"]
+  },
+  {
+    "id": "q026",
+    "question": "什么是嵌入向量的维度？维度高低对检索效果有什么影响？",
+    "reference": "嵌入向量的维度是指将文本映射为向量后的长度（如384维、768维、1024维等）。维度对检索效果的影响是一个权衡：高维度向量可以编码更丰富的语义信息，理论上能达到更好的检索精度，但计算和存储成本更高，且可能引入噪声；低维度向量计算更快、占用空间更少，但可能丢失细节信息。实践中，常用的嵌入模型维度在384-1536之间。GraphMind使用nomic-embed-text模型（768维），这个维度在语义表达能力和计算效率之间取得了良好平衡。如果需要切换不同维度的嵌入模型，需要重建向量索引，可以通过scripts/reindex_collection.py脚本安全完成。",
+    "query_type": "analytical",
+    "difficulty": "hard",
+    "tags": ["embedding", "dimensions", "tradeoff"]
+  },
+  {
+    "id": "q027",
+    "question": "MongoDB中如何存储文档的文本块（Chunk）？包含哪些字段？",
+    "reference": "在MongoDB中，每个文本块存储为一个独立文档，包含以下关键字段：document_id（所属文档的ID）、chunk_index（块在文档中的序号）、text（块的文本内容）、metadata（块的元数据，如页面号、段落标题等）、status（处理状态，如'待处理'、'已嵌入'、'失败'）。此外还会记录创建时间、更新时间等管理字段。一个文档通常对应多条块记录，通过document_id关联。这种存储方式便于按文档维度进行增删改查操作，也支持按块粒度追踪处理状态。",
+    "query_type": "factual",
+    "difficulty": "easy",
+    "tags": ["mongodb", "chunking", "data-model"]
+  },
+  {
+    "id": "q028",
+    "question": "GraphMind中如何处理不同类型的文档上传（PDF、Word、Markdown）？",
+    "reference": "GraphMind通过Parser模块支持多种文档类型的解析：对于PDF文件，使用PyMuPDF（首选）和PyPDF2进行文本提取，PyMuPDF的提取质量和速度都优于PyPDF2；对于Word文档（.docx），使用python-docx库解析；对于Markdown文件（.md），使用markdown库解析并保留标题层级结构；对于纯文本文件（.txt），使用chardet自动检测编码后读取。此外还支持通过unstructured库处理更多格式，以及可选的PaddleOCR进行图片中的文字识别。所有解析器统一输出纯文本，送入后续的分块、嵌入和存储流程。",
+    "query_type": "procedural",
+    "difficulty": "medium",
+    "tags": ["parsing", "document-processing", "graphmind"]
+  },
+  {
+    "id": "q029",
+    "question": "什么是Token预算管理？为什么在RAG中需要它？",
+    "reference": "Token预算管理是指在构建Prompt时控制输入token总量的策略。在RAG中需要它的原因在于：LLM都有上下文窗口限制（如4K、8K、32K tokens），如果检索结果加上系统提示词和历史对话超出了窗口限制，LLM将无法处理。此外，更多的token意味着更高的推理成本和更慢的响应速度。Token预算管理通过预估各类内容的token数、设定各类内容的比例上限、按相关性优先截断检索结果等方式，确保最终Prompt不超过窗口限制同时保留最有价值的信息。GraphMind中通过token_utils模块进行token估算和截断处理。",
+    "query_type": "definition",
+    "difficulty": "medium",
+    "tags": ["token", "context-window", "optimization"]
+  },
+  {
+    "id": "q030",
+    "question": "Docker Compose在GraphMind项目中编排了哪些服务？它们之间如何通信？",
+    "reference": "GraphMind的docker-compose.yml编排了五个服务：MongoDB（文档数据库，7.0版本）、Qdrant（向量数据库，latest版本）、Neo4j（图数据库，5.15版本）、Redis（缓存，7版本）、API（FastAPI后端，端口8000）和Frontend（Vite前端，端口80）。所有服务连接到同一个名为graphmind-net的bridge网络中，通过Docker内置的DNS解析以服务名互相访问（如API通过mongodb:27017连接MongoDB）。API服务配置了健康检查等待（依赖MongoDB和Redis就绪后才启动），而Ollama作为外部服务运行在宿主机上，容器内通过host.docker.internal:11434访问。",
+    "query_type": "factual",
+    "difficulty": "easy",
+    "tags": ["docker", "deployment", "graphmind"]
+  },
+  {
+    "id": "q031",
+    "question": "jieba分词在GraphMind中起什么作用？为什么中文RAG需要分词？",
+    "reference": "jieba分词在GraphMind中用于BM25关键词检索的中文文本预处理。中文RAG需要分词的原因是：中文文本中词与词之间没有空格分隔，而基于词频统计的BM25/TF-IDF等算法需要以'词'为基本单位进行索引和匹配。如果不分词直接按字切分，会导致'人工智能'被拆成'人'+'工'+'智'+'能'，失去词语级别的语义信号；如果按固定窗口切分（n-gram），又会引入大量无意义的字组合。jieba通过词典匹配和统计模型将中文文本切分为有意义的词语序列，是中文关键词检索的基础组件。",
+    "query_type": "definition",
+    "difficulty": "medium",
+    "tags": ["jieba", "tokenization", "chinese-nlp"]
+  },
+  {
+    "id": "q032",
+    "question": "GraphMind的运行时配置（Runtime Config）机制是如何工作的？",
+    "reference": "GraphMind的运行时配置是一种无需重启服务即可动态调整系统行为的机制。配置存储在MongoDB中，通过API接口进行读写，并带有TTL缓存以减少数据库查询频率。可配置的内容包括：模块开关（如启用/禁用知识图谱检索、重排序、多Agent深度研究）、检索参数（默认prefetch_k、final_k、相似度阈值）、日志级别和HTTP日志行为（慢请求阈值、是否记录请求体）。这种设计使得系统管理员可以根据实际运行情况实时调优系统行为，譬如在流量高峰期临时关掉重排序以降低延迟，或在排查问题时动态提高日志级别。",
+    "query_type": "procedural",
+    "difficulty": "hard",
+    "tags": ["runtime-config", "graphmind", "operations"]
+  },
+  {
+    "id": "q033",
+    "question": "对比RAG和微调（Fine-tuning）这两种增强LLM的方法，各自适合什么场景？",
+    "reference": "RAG和微调是两种不同思路的LLM增强方法。RAG适合的场景：需要访问最新信息（知识可以随时更新无需重新训练）、需要引用来源（可溯源每个回答的出处）、知识库频繁变化、数据量很大但不需要改变模型行为风格、对幻觉零容忍的应用。微调适合的场景：需要模型学习特定的写作风格或格式、任务有明确的输入输出模式、数据量较小但标注质量高、需要降低推理时延和成本（不需要额外的检索步骤）。在实践中，两者可以结合使用——通过微调让模型更好地利用检索到的上下文，构建更为强大的RAG系统。",
+    "query_type": "comparative",
+    "difficulty": "hard",
+    "tags": ["rag", "fine-tuning", "comparison"]
+  },
+  {
+    "id": "q034",
+    "question": "GraphMind中如何实现引文（Citation）功能？",
+    "reference": "GraphMind的引文功能通过citation_utils模块实现，工作流程如下：在检索阶段，每个检索到的文本块都带有来源元数据（文档ID、块序号、原文链接）；在生成阶段，系统在Prompt中为每个上下文片段分配编号，并要求LLM在回答中使用[num]格式引用信息来源；在输出阶段，通过format_evidence_context函数将上下文和编号信息格式化后注入Prompt，extract_citation_ids函数从生成文本中提取引文编号，validate_citations函数验证引文的合法性。前端渲染时将引文标记转换为可点击的来源链接，用户点击即可查看原文片段。",
+    "query_type": "procedural",
+    "difficulty": "hard",
+    "tags": ["citation", "graphmind", "transparency"]
+  },
+  {
+    "id": "q035",
+    "question": "什么是nDCG指标？它在检索评测中有什么优势？",
+    "reference": "nDCG（Normalized Discounted Cumulative Gain，归一化折损累积增益）是信息检索中评估排序质量的指标。它的核心思想是：相关度高的文档排在前面比排在后面更有价值，且文档的价值按照位置进行折损（排名越靠后，贡献越小）。nDCG的计算分为三步：DCG = sum(rel_i / log2(i+1))，其中rel_i是第i个结果的真实相关度；IDCG是理想排序下的DCG（最优排序）；nDCG = DCG / IDCG。它的优势在于：支持多级相关度（不只是相关/不相关的二值判断）、考虑了排序位置的影响、归一化后可以在不同查询之间比较。在RAG评测中，nDCG能更精细地衡量检索结果的排序质量。",
+    "query_type": "definition",
+    "difficulty": "hard",
+    "tags": ["ndcg", "metrics", "retrieval"]
+  },
+  {
+    "id": "q036",
+    "question": "GraphMind项目中的Deep Research（深度研究）和普通RAG问答有什么区别？",
+    "reference": "Deep Research和普通RAG问答的核心区别在于任务复杂度处理方式：普通RAG问答是单轮的'检索-生成'流程，适合事实查询和简单问题；Deep Research是多Agent协作的多步研究流程，适合需要分析、综合和批判性思维的复杂问题。Deep Research的工作流程包括：Coordinator理解问题并制定研究计划、多个Expert Agent并行执行不同的分析任务（检索、代码分析、概念解释、示例生成等）、Critic Agent评审各Agent的输出质量、Summarizer综合所有分析结果生成最终报告。整个过程可能需要多轮迭代和多步推理，最终产出一份结构化、多角度的深度研究报告而非简单回答。",
+    "query_type": "comparative",
+    "difficulty": "hard",
+    "tags": ["deep-research", "multi-agent", "graphmind"]
+  },
+  {
+    "id": "q037",
+    "question": "为什么说'好的评测数据集'是RAG质量保障的基础？",
+    "reference": "好的评测数据集是RAG质量保障的基础，原因有三：第一，评测数据的质量直接决定评测结论的可信度——如果Ground Truth本身有误，评测指标再漂亮也是'垃圾进垃圾出'；第二，数据集的覆盖度决定了评测的全面性——如果数据集只覆盖简单的事实查询而遗漏了多跳推理和边界情况，那评测成绩好不代表系统真的好；第三，数据集的设计反映了业务优先级——不同应用场景对RAG的质量要求不同（法律场景重精确率，客服场景重覆盖度和安全性），数据集应该反映真实的业务需求分布。因此，构建评测数据集不仅是技术工作，更是对业务需求的深入理解和结构化表达。",
+    "query_type": "analytical",
+    "difficulty": "hard",
+    "tags": ["evaluation", "dataset", "best-practices"]
+  },
+  {
+    "id": "q038",
+    "question": "GraphMind使用了哪些嵌入模型？如何切换不同的嵌入模型？",
+    "reference": "GraphMind默认使用Ollama托管的nomic-embed-text模型（768维）进行文本嵌入。切换嵌入模型的方法：首先在Ollama中拉取新模型（如ollama pull bge-m3），然后通过API的运行时配置接口或环境变量OLLAMA_EMBEDDING_MODEL指定新的模型名称，最后运行scripts/reindex_collection.py脚本重建Qdrant集合——这一步是必须的，因为不同嵌入模型产生的向量维度可能不同，而Qdrant集合的向量维度在创建时固定。重建过程中脚本会自动创建新集合、重新嵌入所有文档块、然后将流量切换到新集合。",
+    "query_type": "factual",
+    "difficulty": "medium",
+    "tags": ["embedding", "model-switching", "graphmind"]
+  },
+  {
+    "id": "q039",
+    "question": "检索结果中存在相互矛盾的信息时，RAG系统应该如何处理？",
+    "reference": "当检索结果中存在相互矛盾的信息时，理想的RAG系统应：首先，识别出矛盾（通过LLM分析或结构化对比），然后在生成回答时明确告知用户存在信息冲突，列出不同来源的观点及其出处，并避免武断地选择某一方作为'正确'答案。如果系统有置信度机制，可以根据来源的权威性、时效性和一致性评估给出参考倾向。GraphMind中的处理方式包括：通过生成Prompt中的约束指令要求LLM在遇到矛盾时诚实说明、利用引文功能标注每个观点的来源以便用户自行判断、以及在Deep Research模式的批判性评估环节中专门识别和标记信息冲突。这是衡量RAG系统成熟度的一个重要维度。",
+    "query_type": "edge_case",
+    "difficulty": "hard",
+    "tags": ["contradiction", "edge-case", "robustness"]
+  },
+  {
+    "id": "q040",
+    "question": "Ragas框架是什么？它解决了RAG开发中的什么痛点？",
+    "reference": "Ragas（Retrieval Augmented Generation Assessment）是由Exploding Gradients团队开发的开源RAG评估框架。它解决的痛点在于：许多开发者能搭建RAG系统，但不知道如何量化评估其质量。传统评估要么依赖人工打分（成本高、不可扩展），要么只看检索的Recall/Precision（无法反映端到端的生成质量）。Ragas提供了一套标准化的指标（包括Faithfulness、Answer Relevancy、Context Precision、Context Recall、Answer Correctness等），支持使用各种LLM（OpenAI、Ollama、HuggingFace等）作为评判者自动打分，生成结构化的评估报告。它让RAG系统的开发从'凭感觉调参'进化到'数据驱动迭代'。",
+    "query_type": "definition",
+    "difficulty": "easy",
+    "tags": ["ragas", "evaluation", "tools"]
+  }
+]

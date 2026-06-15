@@ -30,5 +30,11 @@ test:
 eval:
 	python eval/retrieval_eval.py
 
+eval-ragas:
+	python eval/ragas_eval.py
+
+eval-ragas-quick:
+	python eval/ragas_eval.py --limit 5
+
 reindex:
 	python scripts/reindex_collection.py
