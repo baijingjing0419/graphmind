@@ -28,49 +28,17 @@
 
 ### 1. 环境要求
 
-- Python 3.10+
-- Node.js 20+
 - Docker / Docker Compose
 - Ollama（本地模型服务）
 
-### 2. 启动本地依赖
+### 2. 配置环境变量
 
 ```bash
-docker compose up -d
+cp .env.example .env.docker
+# 编辑 .env.docker，按需修改配置
 ```
 
-启动 MongoDB、Qdrant、Neo4j、Redis：
-
-| 服务 | 地址 |
-| --- | --- |
-| MongoDB | `localhost:27017` |
-| Qdrant REST | `localhost:6333` |
-| Neo4j Bolt | `localhost:7687` |
-| Redis | `localhost:6379` |
-
-### 3. 安装 Python 依赖
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
-
-如需 PaddleOCR：
-
-```bash
-./download_dependencies.sh
-pip install -e ./vendor/PaddleOCR
-```
-
-### 4. 配置环境变量
-
-```bash
-cp .env.example .env.development
-# 编辑 .env.development，按需修改配置
-```
-
-### 5. 拉取 Ollama 模型
+### 3. 拉取 Ollama 模型
 
 ```bash
 ollama pull gemma3:1b
@@ -78,25 +46,19 @@ ollama pull nomic-embed-text
 ollama pull qwen2.5:3b         # Ragas 评测用 Judge 模型
 ```
 
-### 6. 启动后端
+### 4. 一键启动
 
 ```bash
-python main.py
+docker compose up -d
 ```
 
-访问：
-- API 文档：`http://localhost:8000/docs`
-- 健康检查：`http://localhost:8000/health`
+启动全部服务：MongoDB、Qdrant、Neo4j、Redis、后端 API、前端。
 
-### 7. 启动前端
-
-```bash
-cd web-tanstack
-npm install
-npm run dev
-```
-
-访问 `http://localhost:5173`，后端地址通过 `VITE_API_URL` 环境变量配置（默认 `http://localhost:8000`）。
+| 服务 | 地址 |
+| --- | --- |
+| 前端页面 | `http://localhost` |
+| API 文档 | `http://localhost:8000/docs` |
+| 健康检查 | `http://localhost:8000/health` |
 
 ## 主要 API
 
@@ -173,14 +135,6 @@ graphmind/
 ├── main.py              # 应用入口
 ├── docker-compose.yml   # 本地依赖服务
 └── Dockerfile           # API 镜像构建
-```
-
-## Docker 部署
-
-```bash
-./download_dependencies.sh
-DOCKER_BUILDKIT=1 docker build -t graphmind .
-docker run -d --name graphmind-api -p 8000:8000 --env-file .env.production graphmind
 ```
 
 ## License
